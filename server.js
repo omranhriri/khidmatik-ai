@@ -115,10 +115,12 @@ app.patch("/api/admin/orders/:id", (req, res) => {
   res.json({ ok: true });
 });
 
-app.use(express.static(path.join(__dirname, "public")));
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "index.html"));
+});
 
-app.get(/.*/, (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
+app.get("/admin.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "admin.html"));
 });
 
 app.listen(PORT, HOST, () => {

@@ -1,0 +1,17 @@
+{
+  "name": "khidmatik-ai",
+  "version": "1.0.0",
+  "private": true,
+  "description": "خدمتك AI - منصة خدمات رقمية",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.8.1",
+    "express": "^5.1.0"
+  }
+}

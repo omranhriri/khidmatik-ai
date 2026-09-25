@@ -1,0 +1,12 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>إدارة خدمتك AI</title><style>
+body{background:#080b14;color:#fff;font-family:Tahoma,Arial;margin:0}.wrap{max-width:900px;margin:auto;padding:25px}.box,.order{background:#101522;border:1px solid #283148;border-radius:15px;padding:18px;margin:12px 0}input,button,select{padding:12px;border-radius:9px;border:1px solid #30394d;background:#080b14;color:#fff}button{background:#7c5cff;font-weight:bold;cursor:pointer}.row{display:flex;gap:8px;flex-wrap:wrap}.muted{color:#929bad}.err{color:#ff9090}
+</style></head><body><div class="wrap"><h1>لوحة إدارة الطلبات</h1><div id="login" class="box"><input id="u" placeholder="اسم المستخدم"><input id="p" type="password" placeholder="كلمة المرور"><button onclick="login()">دخول</button><p id="le" class="err"></p></div><div id="app" style="display:none"><button onclick="load()">تحديث</button><button onclick="logout()">خروج</button><div id="orders"></div></div></div>
+<script>
+let token=localStorage.getItem("kh_token");
+function show(){loginbox.style.display=token?"none":"block";app.style.display=token?"block":"none";if(token)load()}
+async function login(){let r=await fetch("/api/admin/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({username:u.value,password:p.value})});let d=await r.json();if(!r.ok){le.textContent=d.error;return}token=d.token;localStorage.setItem("kh_token",token);show()}
+function logout(){localStorage.removeItem("kh_token");token=null;show()}
+async function load(){let r=await fetch("/api/admin/orders",{headers:{Authorization:"Bearer "+token}});if(r.status===401){logout();return}let a=await r.json();orders.innerHTML=a.map(o=>`<div class="order"><b>${o.order_code}</b> — ${o.name}<div class="muted">${o.phone} | ${o.service} | ${o.created_at}</div><p>${o.details}</p><div class="row"><select onchange="status(${o.id},this.value)"><option ${o.status=="جديد"?"selected":""}>جديد</option><option ${o.status=="قيد التنفيذ"?"selected":""}>قيد التنفيذ</option><option ${o.status=="مكتمل"?"selected":""}>مكتمل</option></select><span>${o.status}</span></div></div>`).join("")||"<p>لا توجد طلبات.</p>"}
+async function status(id,s){await fetch("/api/admin/orders/"+id,{method:"PATCH",headers:{"Content-Type":"application/json",Authorization:"Bearer "+token},body:JSON.stringify({status:s})});load()}
+show();
+</script></body></html>

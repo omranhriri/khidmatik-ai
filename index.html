@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>خدمتك AI</title><style>
+body{margin:0;background:#080b14;color:#fff;font-family:Tahoma,Arial;line-height:1.7}.wrap{max-width:900px;margin:auto;padding:20px}.hero{text-align:center;padding:70px 10px}.hero h1{font-size:50px;margin:10px}.hero span{color:#8b73ff}.hero p{color:#adb5c8}.btn{background:#7c5cff;color:#fff;border:0;border-radius:12px;padding:13px 20px;font-weight:700;cursor:pointer}section{padding:35px 0}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.card,form,.box{background:#101522;border:1px solid #283148;border-radius:16px;padding:20px}input,select,textarea{width:100%;box-sizing:border-box;margin:6px 0 14px;padding:12px;border-radius:9px;background:#080b14;color:#fff;border:1px solid #30394d}textarea{min-height:110px}.ok{background:#12301f;padding:12px;border-radius:10px;display:none}.error{color:#ff8d8d}.orders{margin-top:15px}.order{border:1px solid #293249;border-radius:12px;padding:14px;margin:10px 0}.status{background:#222b40;padding:4px 8px;border-radius:20px;font-size:12px}@media(max-width:700px){.grid{grid-template-columns:1fr}.hero h1{font-size:38px}}
+</style></head><body>
+<div class="wrap">
+<section class="hero"><div>⚡ خدمات رقمية</div><h1>خدمتك <span>AI</span></h1><p>خدمات كتابة وتسويق ومحتوى مدعومة بالذكاء الاصطناعي.</p><a class="btn" href="#order">اطلب الآن</a></section>
+<section><h2>الخدمات</h2><div class="grid">
+<div class="card">📄 <b>CV احترافي</b><br>5 د.أ</div><div class="card">📱 <b>محتوى سوشيال</b><br>10 د.أ</div><div class="card">🛍️ <b>وصف منتجات</b><br>5 د.أ</div>
+<div class="card">📈 <b>خطة تسويق</b><br>15 د.أ</div><div class="card">✍️ <b>كتابة إعلانية</b><br>5 د.أ</div><div class="card">🤖 <b>حلول AI</b><br>من 10 د.أ</div>
+</div></section>
+<section id="order"><h2>اطلب خدمة</h2><form id="form"><label>الاسم</label><input id="name" required><label>رقم الهاتف</label><input id="phone" required><label>الخدمة</label><select id="service"><option>CV احترافي</option><option>محتوى سوشيال</option><option>وصف منتجات</option><option>خطة تسويق</option><option>كتابة إعلانية</option><option>حلول AI</option></select><label>التفاصيل</label><textarea id="details" required></textarea><button class="btn">إرسال الطلب</button><div id="ok" class="ok"></div><div id="err" class="error"></div></form></section>
+<section><h2>متابعة طلب</h2><form id="track"><input id="code" placeholder="مثال KH-AB12CD34" required><button class="btn">بحث</button><div id="result"></div></form></section>
+<section><h2>الإدارة</h2><div class="box"><p>الدخول للوحة الإدارة من هنا:</p><a class="btn" href="/admin.html">لوحة الإدارة</a></div></section>
+</div>
+<script>
+form.onsubmit=async e=>{e.preventDefault();ok.style.display="none";err.textContent="";let r=await fetch("/api/orders",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:name.value,phone:phone.value,service:service.value,details:details.value})});let d=await r.json();if(r.ok){ok.style.display="block";ok.innerHTML="تم إنشاء الطلب 🎉 رقم الطلب: <b>"+d.orderCode+"</b>";form.reset()}else err.textContent=d.error||"حدث خطأ"};
+track.onsubmit=async e=>{e.preventDefault();result.innerHTML="جارٍ البحث...";let r=await fetch("/api/orders/"+encodeURIComponent(code.value.trim()));let d=await r.json();result.innerHTML=r.ok?`<p>الخدمة: <b>${d.service}</b><br>الحالة: <span class="status">${d.status}</span></p>`:`<p class="error">${d.error}</p>`}
+</script></body></html>

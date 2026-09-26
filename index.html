@@ -14,6 +14,88 @@ body{margin:0;background:#080b14;color:#fff;font-family:Tahoma,Arial;line-height
 <section><h2>الإدارة</h2><div class="box"><p>الدخول للوحة الإدارة من هنا:</p><a class="btn" href="/admin.html">لوحة الإدارة</a></div></section>
 </div>
 <script>
-form.onsubmit=async e=>{e.preventDefault();ok.style.display="none";err.textContent="";let r=await fetch("/api/orders",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:name.value,phone:phone.value,service:service.value,details:details.value})});let d=await r.json();if(r.ok){ok.style.display="block";ok.innerHTML="تم إنشاء الطلب 🎉 رقم الطلب: <b>"+d.orderCode+"</b>";form.reset()}else err.textContent=d.error||"حدث خطأ"};
-track.onsubmit=async e=>{e.preventDefault();result.innerHTML="جارٍ البحث...";let r=await fetch("/api/orders/"+encodeURIComponent(code.value.trim()));let d=await r.json();result.innerHTML=r.ok?`<p>الخدمة: <b>${d.service}</b><br>الحالة: <span class="status">${d.status}</span></p>`:`<p class="error">${d.error}</p>`}
-</script></body></html>
+<script>
+const form = document.getElementById("form");
+const nameInput = document.getElementById("name");
+const phoneInput = document.getElementById("phone");
+const serviceInput = document.getElementById("service");
+const detailsInput = document.getElementById("details");
+const ok = document.getElementById("ok");
+const err = document.getElementById("err");
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  ok.style.display = "none";
+  err.textContent = "";
+
+  const data = {
+    name: nameInput.value.trim(),
+    phone: phoneInput.value.trim(),
+    service: serviceInput.value.trim(),
+    details: detailsInput.value.trim()
+  };
+
+  if (!data.name || !data.phone || !data.service) {
+    err.textContent = "الاسم والهاتف والخدمة مطلوبة.";
+    return;
+  }
+
+  try {
+    const r = await fetch("/api/orders", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
+    });
+
+    const d = await r.json();
+
+    if (r.ok) {
+      ok.style.display = "block";
+      ok.innerHTML =
+        "تم إنشاء الطلب 🎉 رقم الطلب: <b>" + d.code + "</b>";
+      form.reset();
+    } else {
+      err.textContent = d.error || "حدث خطأ أثناء إرسال الطلب.";
+    }
+  } catch (error) {
+    err.textContent = "تعذر الاتصال بالخادم. حاول مرة أخرى.";
+  }
+});
+
+
+const track = document.getElementById("track");
+const codeInput = document.getElementById("code");
+const result = document.getElementById("result");
+
+track.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  result.innerHTML = "جارٍ البحث...";
+
+  try {
+    const r = await fetch(
+      "/api/orders/" + encodeURIComponent(codeInput.value.trim())
+    );
+
+    const d = await r.json();
+
+    if (r.ok) {
+      result.innerHTML =
+        "<p>الخدمة: <b>" +
+        d.service +
+        "</b><br>الحالة: <span class='status'>" +
+        d.status +
+        "</span></p>";
+    } else {
+      result.innerHTML =
+        "<p class='error'>" + (d.error || "الطلب غير موجود.") + "</p>";
+    }
+  } catch (error) {
+    result.innerHTML =
+      "<p class='error'>تعذر الاتصال بالخادم.</p>";
+  }
+});
+</script>/script></body></html>
